@@ -31,7 +31,7 @@ export class Pawn extends Piece {
                     return false;
                 }
             }else{
-                if(move[0] > this.currentX +1*this.direction){
+                if(Math.abs(move[0] - this.currentX +1*this.direction) > 1 ){
                     if(board[this.currentX+1*this.direction][this.currentY].piece == null){
                         if(board[move[0]][move[1]].piece == null){
                             return true;
