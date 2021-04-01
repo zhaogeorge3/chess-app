@@ -95,7 +95,7 @@ export default defineComponent({
 
       this.board[0][3].setPiece(new Queen(false, 0, 3));
       this.board[7][3].setPiece(new Queen(true, 7, 3));
-      
+
       this.board[0][4].setPiece(new King(false, 0, 4));
       this.board[7][4].setPiece(new King(true, 7, 4));
 
@@ -113,7 +113,7 @@ export default defineComponent({
       if(this.isWhitesTurn){
         return "White's Turn";
       } else {
-        return "Black' Turn";
+        return "Black's Turn";
       }
     },
     selectPiece(boardSquare: BoardSquare){
