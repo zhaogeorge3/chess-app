@@ -1,6 +1,6 @@
 <template id='game'>
-  <div class="chessboard">
-    <div class="row" v-for="(row, index) in chessEngine.board" v-bind:key="index">
+  <div class="chessboard" v-bind:class="playerNum == 2 ? 'rotated' : 'not-rotated'">
+    <div class="row" v-bind:class="playerNum == 2 ? 'rotated' : 'not-rotated'" v-for="(row, index) in chessEngine.board" v-bind:key="index">
         <button class="square" v-for="(col, index) in row" v-bind:key="index" v-bind:style="{ backgroundColor: col.background}"
           @click="move(col)"
         >
@@ -10,7 +10,7 @@
   </div>
   <br>
   <footer>
-    {{chessEngine.message}}
+    {{message}}
   </footer>
 </template>
 
@@ -26,6 +26,7 @@ export default defineComponent({
   name: 'Game',
   data: function () {
     return {
+      message: "White's turn" as string,
       chessEngine: null as unknown as ChessEngine,
       token: "" as string,
       id: null as unknown as string,
@@ -51,6 +52,7 @@ export default defineComponent({
       this.id = id;
       this.updateBoard(id, game);
       this.updateInfo(game);
+      this.message = game.turn === 'w'? "White's Turn" : "Black's Turn";
     });
   },
   methods: {
@@ -148,6 +150,11 @@ export default defineComponent({
 .footer {
   height: 50px;
   margin-top: -50px;
+}
+
+.rotated {
+  transform: rotate(180deg);
+
 }
 </style>
 

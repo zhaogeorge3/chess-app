@@ -1,18 +1,25 @@
 <template>
-    <button @click="newGame()">new game</button>
+    <button v-if="!gameMade" @click="newGame()">new 2 player game</button>
+    <button v-if="!gameMade"><router-link :to="{ name: 'LocalGame' }">Local Game</router-link></button>
     <div v-if="gameMade">
-        <a :href="player1Link">click here to play</a>
+        <button><a :href="player1Link">click here to play</a></button>
         <br>
-        <a :href="player2Link">send this to a friend</a>
+        <div class="container">
+            <input type="text" v-model="player2Link">
+            <button type="button"
+                v-clipboard:copy="player2Link"
+                @click="onSucess()">Copy to clipboard and send to friend!</button>
+        </div>
     </div>
 
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 import firebase from "firebase/app";
-import 'firebase/auth'
-import 'firebase/database'
+import 'firebase/auth';
+import 'firebase/database';
+
 
 export default defineComponent({
 
@@ -35,6 +42,9 @@ export default defineComponent({
     }
   },
   methods: {
+
+    onSucess() {
+    },
     generateToken(length: number = 7){
       return Math.random().toString(20).substr(2, length);
     },
@@ -62,5 +72,6 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
+
 </style>

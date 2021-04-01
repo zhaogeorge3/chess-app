@@ -7,10 +7,12 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@soerenmartius/vue3-clipboard": "^0.1.2",
     "firebase": "^8.3.2",
     "lodash": "^4.17.21",
     "vue": "^3.0.5",
-    "vue-router": "^4.0.5"
+    "vue-router": "^4.0.5",
+    "vue-toastification": "^2.0.0-rc.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.168",
