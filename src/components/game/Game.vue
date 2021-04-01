@@ -1,6 +1,6 @@
 <template id='game'>
   <div class="chessboard">
-    <div class="row" v-for="(row, index) in board" v-bind:key="index">
+    <div class="row" v-for="(row, index) in chessEngine.board" v-bind:key="index">
         <button class="square" v-for="(col, index) in row" v-bind:key="index" v-bind:style="{ backgroundColor: col.background}"
           @click="move(col)"
         >
@@ -10,143 +10,120 @@
   </div>
   <br>
   <footer>
-    {{message}}
+    {{chessEngine.message}}
   </footer>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { ChessEngine } from '../board/ChessEngine'
 import BoardSquare from '../board/BoardSquare'
-import { Pawn } from '../pieces/Pawn'
-import { Rook } from '../pieces/Rook'
-import { Queen } from '../pieces/Queen'
-import { King } from '../pieces/King'
-import { Bishop } from '../pieces/Bishop'
-import { Knight } from '../pieces/Knight'
-import { Piece } from '../pieces/Piece'
+import firebase from "firebase/app";
+import 'firebase/auth'
+import 'firebase/database'
 
 export default defineComponent({
   name: 'Game',
   data: function () {
     return {
-      board: [] as BoardSquare[][],
-      message: "White's Turn" as string,
-      isWhitesTurn: true,
-      pieceSelected: null as unknown as Piece | null,
-      validMoves: [] as number[][]
+      chessEngine: null as unknown as ChessEngine,
+      token: "" as string,
+      id: null as unknown as string,
+      playerNum: null as unknown as number,
+      game: null as unknown as any,
+      firebaseConfig: {
+        apiKey: "AIzaSyA20nb9TOGBG6oVXIlxQYxXfz1vV-GcWR4",
+        authDomain: "chess-cb086.firebaseapp.com",
+        projectId: "chess-cb086",
+        storageBucket: "chess-cb086.appspot.com",
+        messagingSenderId: "1084426781021",
+        appId: "1:1084426781021:web:44b03423c77b5b9885a8b4",
+        measurementId: "G-M1W5RX8G78"
+      }
     }
   },
   created() {
-    this.board = [];
-    for(let i = 0; i < 8; i++){
-      let row : BoardSquare[] = []
-      for(let j = 0; j < 8; j++){
-        if(i%2 == 0){
-          if(j%2 == 0){
-            row.push(new BoardSquare('#AD721A', i, j));
-            } else {
-              row.push(new BoardSquare('#D9AB66', i, j));
-            }
-        } else {
-          if(j%2 == 0){
-            row.push(new BoardSquare('#D9AB66', i, j));
-            } else{
-              row.push(new BoardSquare('#AD721A', i, j));
-            }
-        }
-      }
-      this.board.push(row);
-    }
-    this.initializePieces(this.board);
+    this.token = this.$router.currentRoute.value.params.token.toString();
+    this.chessEngine = new ChessEngine();
+
+    firebase.initializeApp(this.firebaseConfig);
+    this.listenForUpdates(this.token, (id: string, game: any) => {
+      this.id = id;
+      this.updateBoard(id, game);
+      this.updateInfo(game);
+    });
   },
   methods: {
-    setBackgroudColor(){
-      this.board.forEach(row => {
-        row.forEach(col => {
-          this.validMoves.forEach(move => {
-            if(move[0] == col.x && move[1] == col.y){
-              col.background = '#3E880C';
+    move(boardSquare: BoardSquare) {
+      if(this.isMyTurn(this.playerNum, this.game.turn)){
+        this.chessEngine.isWhitesTurn = this.game.turn === 'w'? true : false;
+        let move = this.chessEngine.move(boardSquare);
+        if(move != null){
+          const game = {
+            p1_token: this.game.p1_token,
+            p2_token: this.game.p2_token,
+            white: this.game.white,
+            turn: (this.game.turn === "w" ? 'b' : 'w'),
+            ps: move[0],
+            bs: move[1]
             }
-          });
+            this.games().set(game);
+          }
+        }
+    },
+    fakeMove(boardSquare: BoardSquare){
+      this.chessEngine.move(boardSquare, true);
+    },
+    updateInfo(game: any) {
+      if(this.isMyTurn(this.playerNum, game.turn) && game.ps != null){
+        this.fakeMove(this.chessEngine.board[game.ps.currentX][game.ps.currentY]);
+        this.fakeMove(this.chessEngine.board[game.bs.x][game.bs.y]);
+      }
+
+    },
+    isMyTurn(playerNum: number, turn: string) {
+      return (playerNum === 1 && turn === 'w') || (playerNum === 2 && turn === 'b');
+    },
+    updateBoard(id: string, game: any) {
+
+      this.playerNum = this.figurePlayer(this.token, game);
+      if (!this.chessEngine.board) {
+        this.chessEngine = new ChessEngine();
+        
+      }
+    },
+    figurePlayer(token: string, game: any) {
+      if (token === game.p1_token) {
+        return 1;
+      } else if (token === game.p2_token) {
+        return 2;
+      } else {
+        return 0;
+      }
+    },
+    listenForUpdates(token: string, cb: any) {
+      const db = firebase.database().ref("/games");
+      ["p1_token", "p2_token"].forEach((name) => {
+        const ref = db.orderByChild(name).equalTo(token);
+        ref.on('value', (ref) => {
+          const [id, game] = this.parse(ref.val());
+          if (!id) return;
+          this.game = game;
+          cb(id, game);
         });
       });
     },
-    resetBackGroundColor(){
-      this.validMoves.forEach(move => {
-        this.board[move[0]][move[1]].background = this.board[move[0]][move[1]].originalBackground;
-      })  
+    parse(tree: any) {
+      if (!tree) return [];
+      const keys = Object.keys(tree);
+      const id = keys[0];
+      const game = tree[id];
+      return [id, game];
     },
-    initializePieces(board: BoardSquare[][]){
-      this.initializePawns(board);
-      this.board[0][0].setPiece(new Rook(false, 0, 0));
-      this.board[0][7].setPiece(new Rook(false, 0, 7));
-      this.board[7][0].setPiece(new Rook(true, 7, 0));
-      this.board[7][7].setPiece(new Rook(true, 7, 7));
-
-      this.board[0][2].setPiece(new Bishop(false, 0, 2));
-      this.board[0][5].setPiece(new Bishop(false, 0, 5));
-      this.board[7][2].setPiece(new Bishop(true, 7, 2));
-      this.board[7][5].setPiece(new Bishop(true, 7, 5));
-
-      this.board[0][1].setPiece(new Knight(false, 0, 1));
-      this.board[0][6].setPiece(new Knight(false, 0, 6));
-      this.board[7][1].setPiece(new Knight(true, 7, 1));
-      this.board[7][6].setPiece(new Knight(true, 7, 6));
-
-      this.board[0][3].setPiece(new Queen(false, 0, 3));
-      this.board[7][3].setPiece(new Queen(true, 7, 3));
-
-      this.board[0][4].setPiece(new King(false, 0, 4));
-      this.board[7][4].setPiece(new King(true, 7, 4));
-
-
-    },
-    initializePawns(board: BoardSquare[][]){
-      for(let i = 0; i < 8; i++){
-        board[1][i].setPiece(new Pawn(false, 1, i));
-      }
-      for(let i = 0; i < 8; i++){
-        board[6][i].setPiece(new Pawn(true, 6, i));
-      }
-    },
-    getMessage(){
-      if(this.isWhitesTurn){
-        return "White's Turn";
-      } else {
-        return "Black's Turn";
-      }
-    },
-    selectPiece(boardSquare: BoardSquare){
-      if(boardSquare.piece?.isWhite == this.isWhitesTurn){
-        this.validMoves = [];
-        this.pieceSelected = boardSquare.piece;
-        this.validMoves = boardSquare.piece.getValidMoves(this.board);
-        this.setBackgroudColor();
-      }
-
-    },
-    move(boardSquare: BoardSquare) {
-      if(this.pieceSelected != null){
-        let valid = false;
-        this.validMoves.forEach(move => {
-            if(move[0] == boardSquare.x && move[1] == boardSquare.y){
-              valid = true;
-            }
-        });
-        this.resetBackGroundColor();
-        if(valid){
-          this.isWhitesTurn = !this.isWhitesTurn;
-          this.message = this.getMessage();
-          this.board[boardSquare.x][boardSquare.y].setPiece(this.pieceSelected);
-          this.board[this.pieceSelected.currentX][this.pieceSelected.currentY].setPiece(null);
-          this.pieceSelected.setXY(boardSquare.x, boardSquare.y);
-        }
-        this.validMoves = [];
-        this.pieceSelected = null;
-      } else {
-        this.selectPiece(boardSquare);
-      }
-      
+    games() {
+      return firebase
+        .database()
+        .ref(`/games/${this.id}`);
     }
   }
 })

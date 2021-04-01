@@ -3,7 +3,7 @@
     <h1>Welcome To Chess</h1>
   </header>
   <div>
-  <Game/>
+    <router-view />
   </div>
 </template>
 
@@ -12,10 +12,10 @@ import { defineComponent } from 'vue'
 import Game from './components/game/Game.vue'
 
 export default defineComponent({
+
+
   name: 'App',
-  components: {
-    Game,
-  }
+
 })
 </script>
 

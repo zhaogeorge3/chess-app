@@ -3,7 +3,7 @@ import BoardSquare from "../board/BoardSquare"
 
 export class Bishop extends Piece { 
 
-    static IMAGE: string = "./images/pieces/bishop.png"
+    static IMAGE: string = "../images/pieces/bishop.png"
 
 
     constructor(iswhite: boolean, currentX: number, currentY: number) { 

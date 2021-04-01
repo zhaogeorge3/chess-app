@@ -3,7 +3,7 @@ import BoardSquare from "../board/BoardSquare"
 
 export class Pawn extends Piece { 
 
-    static IMAGE: string = "./images/pieces/pawn.png"
+    static IMAGE: string = "../images/pieces/pawn.png"
 
     hasMoved: boolean;
     direction: number;
