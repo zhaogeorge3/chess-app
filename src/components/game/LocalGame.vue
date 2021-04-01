@@ -1,6 +1,6 @@
 <template id='game'>
-  <div class="chessboard">
-    <div class="row" v-for="(row, index) in chessEngine.board" v-bind:key="index">
+  <div class="chessboard" v-bind:class="!chessEngine.isWhitesTurn ? 'rotated' : 'not-rotated'">
+    <div class="row" v-bind:class="!chessEngine.isWhitesTurn ? 'rotated' : 'not-rotated'" v-for="(row, index) in chessEngine.board" v-bind:key="index">
         <button class="square" v-for="(col, index) in row" v-bind:key="index" v-bind:style="{ backgroundColor: col.background}"
           @click="move(col)"
         >
@@ -57,6 +57,11 @@ export default defineComponent({
 .footer {
   height: 50px;
   margin-top: -50px;
+}
+
+.rotated {
+  transform: rotate(180deg);
+
 }
 </style>
 
