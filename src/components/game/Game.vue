@@ -4,7 +4,7 @@
         <button class="square" v-for="(col, index) in row" v-bind:key="index" v-bind:style="{ backgroundColor: col.background}"
           @click="move(col)"
         >
-          <img v-bind:src="col.piece != null ? col.piece.image : ''">
+          <img v-if="col.piece != null" v-bind:src="col.piece.img">
         </button>
     </div>
   </div>
