@@ -1,5 +1,5 @@
 <template id='game'>
-  <div class="chessboard" v-bind:class="playerNum == 2 ? 'rotated' : 'not-rotated'">
+  <div class="chessboard" v-if="chessEngine" v-bind:class="playerNum == 2 ? 'rotated' : 'not-rotated'">
     <div class="row" v-bind:class="playerNum == 2 ? 'rotated' : 'not-rotated'" v-for="(row, index) in chessEngine.board" v-bind:key="index">
         <button class="square" v-for="(col, index) in row" v-bind:key="index" v-bind:style="{ backgroundColor: col.background}"
           @click="move(col)"
@@ -26,7 +26,7 @@ export default defineComponent({
   name: 'Game',
   data: function () {
     return {
-      message: "White's turn" as string,
+      message: "Waiting for Player 2" as string,
       chessEngine: null as unknown as ChessEngine,
       token: "" as string,
       id: null as unknown as string,
@@ -45,17 +45,25 @@ export default defineComponent({
   },
   created() {
     this.token = this.$router.currentRoute.value.params.token.toString();
-    this.chessEngine = new ChessEngine();
 
     firebase.initializeApp(this.firebaseConfig);
     this.listenForUpdates(this.token, (id: string, game: any) => {
       this.id = id;
+      this.message = this.getMessage(game);
       this.updateBoard(id, game);
       this.updateInfo(game);
-      this.message = game.turn === 'w'? "White's Turn" : "Black's Turn";
     });
   },
   methods: {
+    getMessage(game: any){
+      if(game.turn === 'w'){
+        return "White's Turn";
+      } else if(game.turn === 'b'){
+        return "Black's Turn";
+      } else {
+        return "Waiting For Player 2";
+      }
+    },
     move(boardSquare: BoardSquare) {
       if(this.isMyTurn(this.playerNum, this.game.turn)){
         this.chessEngine.isWhitesTurn = this.game.turn === 'w'? true : false;
@@ -89,10 +97,23 @@ export default defineComponent({
     updateBoard(id: string, game: any) {
 
       this.playerNum = this.figurePlayer(this.token, game);
-      if (!this.chessEngine.board) {
-        this.chessEngine = new ChessEngine();
-        
+      if(game.turn != "not started"){
+        if (!this.chessEngine) {
+          this.chessEngine = new ChessEngine();
+        }
+      } else {
+        if(this.playerNum ==  2){
+          const newGame = {
+            p1_token: game.p1_token,
+            p2_token: game.p2_token,
+            white: game.p1_token,
+            turn: "w"
+          };
+          console.log(newGame);
+          this.games().set(newGame);
+        }  
       }
+
     },
     figurePlayer(token: string, game: any) {
       if (token === game.p1_token) {

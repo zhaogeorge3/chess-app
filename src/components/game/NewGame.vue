@@ -56,7 +56,7 @@ export default defineComponent({
          p1_token: this.player1Link,
          p2_token: this.player2Link,
          white: this.player1Link,
-         turn: "w"
+         turn: "not started"
         };
         const firebaseGame = firebase.database().ref("games").push();
         firebaseGame.set(newGame).then(() => {
