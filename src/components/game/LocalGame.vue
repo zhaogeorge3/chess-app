@@ -62,10 +62,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.square {
-  height: 90px;
-  width: 90px;
-}
+
+.square{
+    height: 100%;
+    width: 100%;
+    }
 
 .footer {
   height: 50px;
@@ -77,6 +78,7 @@ export default defineComponent({
 }
 
 .rotated {
+    width: 100%;
     animation: animationFrames 1s ease 0s 1 normal forwards running;
 }
 @keyframes animationFrames {
@@ -89,6 +91,7 @@ export default defineComponent({
 }
 
 .not-rotated {
+    width: 100%;
     animation: animationFramesReversed 1s ease 0s 1 normal forwards running;
 }
 @keyframes animationFramesReversed {
@@ -111,16 +114,27 @@ export default defineComponent({
 .container {
   display: flex;
   flex-wrap: wrap;
-  width: 720px;
+  width: 80%;
+  margin: auto;
 }
 
-.cell {
+.row {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  align-items: center;
-  width: 90px;
-  height: 90px;
+  flex-basis: 12.5%;
+  margin: 0;
+  height: calc((100vw) / 10.159);
+  justify-content: stretch;
+  border: 0px solid black;
+}
+
+img {
+    height: 77%;
+    width: 77%;    
+}
+
+.row > div{
+    width: 100%;
+    align-self: stretch;
 }
 </style>
 
