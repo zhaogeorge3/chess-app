@@ -115,6 +115,7 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   width: 80%;
+  max-width: 852px;
   margin: auto;
 }
 
@@ -123,6 +124,7 @@ export default defineComponent({
   flex-basis: 12.5%;
   margin: 0;
   height: calc((100vw) / 10.159);
+  max-height: 107px;
   justify-content: stretch;
   border: 0px solid black;
 }
