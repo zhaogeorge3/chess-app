@@ -1,24 +1,33 @@
 <template id='game'>
-  <div class="chessboard" v-bind:class="!chessEngine.isWhitesTurn ? 'rotated' : 'not-rotated'">
-    <div class="row" v-bind:class="!chessEngine.isWhitesTurn ? 'rotated' : 'not-rotated'" v-for="(row, index) in chessEngine.board" v-bind:key="index">
-        <button class="square" v-for="(col, index) in row" v-bind:key="index" v-bind:style="{ backgroundColor: col.background}"
-          @click="move(col)"
-        >
-          <img v-if="col.piece != null" v-bind:src="col.piece.image">
-        </button>
+    <div class="chessboard" >
+        <div v-bind:class="!chessEngine.isWhitesTurn ? 'rotated' : 'not-rotated'">
+            <transition-group name="cell" tag="div" class="container">
+                <div class="row" v-bind:class="!chessEngine.isWhitesTurn ? 'piece-rotated' : 'piece-not-rotated'" v-for="(boardSquare) in chessEngine.getBoardList()" v-bind:key="boardSquare.id">
+                    <div class="cell" v-bind:key="boardSquare.id">
+                        <button class="square" v-bind:style="{ backgroundColor: boardSquare.background}"
+                        @click="move(boardSquare)"
+                        >
+                            <img v-if="boardSquare.piece != null" v-bind:src="boardSquare.piece.image">
+                        </button>
+                    </div>
+                </div>
+            </transition-group>
+
+        </div>
     </div>
-  </div>
   <br>
   <footer>
     {{chessEngine.message}}
   </footer>
+  <button @click="shuffle()">shuffle</button>
+  <button @click="unShuffle()">unShuffle</button>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { ChessEngine } from '../board/ChessEngine'
 import BoardSquare from '../board/BoardSquare'
-
+import _ from "lodash";
 
 export default defineComponent({
   name: 'LocalGame',
@@ -34,6 +43,12 @@ export default defineComponent({
     move(boardSquare: BoardSquare) {
         let move = this.chessEngine.move(boardSquare);
     },
+    shuffle(){
+        this.chessEngine.shuffle();    
+    },
+    unShuffle(){
+        this.chessEngine.unShuffle();    
+    }
   }
 })
 </script>
@@ -42,16 +57,6 @@ export default defineComponent({
 .square {
   height: 90px;
   width: 90px;
-  background-repeat: no-repeat;
-  background-position: center;
-  vertical-align: top;
-}
-.row{
-  margin: 0;
-  height: 90px;
-  line-height: 0;
-  font-size: 0;
-  vertical-align:bottom;
 }
 
 .footer {
@@ -59,9 +64,55 @@ export default defineComponent({
   margin-top: -50px;
 }
 
-.rotated {
-  transform: rotate(180deg);
+.piece-rotated{
+    transform: rotate(180deg);    
+}
 
+.rotated {
+    animation: animationFrames 1s ease 0s 1 normal forwards running;
+}
+@keyframes animationFrames {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(180deg);
+  }
+}
+
+.not-rotated {
+    animation: animationFramesReversed 1s ease 0s 1 normal forwards running;
+}
+@keyframes animationFramesReversed {
+  0% {
+    transform: translate(0px, 0px) rotate(180deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+}
+.cell-move {
+  transition: transform 1.3s;
+}
+.chessboard{
+    align-content: center; 
+    display: flex;
+    justify-content: center;   
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 720px;
+}
+
+.cell {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  width: 90px;
+  height: 90px;
 }
 </style>
 

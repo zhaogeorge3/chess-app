@@ -23,41 +23,83 @@ export class ChessEngine{
         this.validMoves = [];
     }
 
-  initializeBoard() {
-    let board = [];
-    for(let i = 0; i < 8; i++){
-      let row : BoardSquare[] = []
-      for(let j = 0; j < 8; j++){
-        if(i%2 == 0){
-          if(j%2 == 0){
-            row.push(new BoardSquare('#AD721A', i, j));
-            } else {
-              row.push(new BoardSquare('#D9AB66', i, j));
-            }
-        } else {
-          if(j%2 == 0){
-            row.push(new BoardSquare('#D9AB66', i, j));
-            } else{
-              row.push(new BoardSquare('#AD721A', i, j));
-            }
-        }
-      }
-      board.push(row);
+    shuffle(){
+        let shuffledBoardList = _.shuffle(this.getBoardList());
+        let board = [];
+        let count = 0 as number;
+        for(let i = 0; i < 8; i++){
+            let row = []
+            for(let j = 0; j < 8; j++){
+                row.push(shuffledBoardList.pop());
+            };
+            board.push(row);
+        };
+        this.board = board as BoardSquare[][];
+
     }
-    this.board = board;
-    this.initializePieces(board);
-    return this.board;
-  }
+
+    unShuffle(){
+        let shuffledBoardList = _.orderBy(this.getBoardList(), ['id'], ['desc']);
+        let board = [];
+        let count = 0 as number;
+        for(let i = 0; i < 8; i++){
+            let row = []
+            for(let j = 0; j < 8; j++){
+                row.push(shuffledBoardList.pop());
+            };
+            board.push(row);
+        };
+        this.board = board as BoardSquare[][];
+
+    }
+
+    initializeBoard() {
+        let board = [];
+        let count = 0 as number;
+        for(let i = 0; i < 8; i++){
+            let row : BoardSquare[] = []
+            for(let j = 0; j < 8; j++){
+                if(i%2 == 0){
+                    if(j%2 == 0){
+                        row.push(new BoardSquare('#AD721A', i, j).setId(count));
+                        } else {
+                        row.push(new BoardSquare('#D9AB66', i, j).setId(count));
+                        }
+                    } else {
+                if(j%2 == 0){
+                    row.push(new BoardSquare('#D9AB66', i, j).setId(count));
+                } else{
+                    row.push(new BoardSquare('#AD721A', i, j).setId(count));
+                    }
+                }
+                count++;
+            }
+        board.push(row);
+        }
+        this.board = board;
+        this.initializePieces(board);
+        return this.board;
+    }
+
+    getBoardList(){
+        let listBoard = [] as BoardSquare[];
+        this.board.forEach(row => {
+            row.forEach(col => {
+                listBoard.push(col);
+            });
+        });
+        return listBoard;
+    }
 
     setBackgroudColor(){
         this.board.forEach(row => {
-        row.forEach(col => {
-            this.validMoves?.forEach(move => {
-            if(move[0] == col.x && move[1] == col.y){
-                col.background = '#3E880C';
-            }
+            row.forEach(col => {
+                this.validMoves?.forEach(move => {
+                if(move[0] == col.x && move[1] == col.y){
+                    col.background = '#3E880C';
+                }
+                });
             });
-        });
         });
     }
 

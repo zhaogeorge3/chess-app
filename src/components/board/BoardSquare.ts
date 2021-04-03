@@ -1,6 +1,7 @@
 import { Piece } from "../pieces/Piece"
 
 export default class BoardSquare {
+    id?: number;
     piece?: Piece | null;
     background: string;
     x: number;
@@ -16,5 +17,9 @@ export default class BoardSquare {
 
     setPiece(piece: Piece | null){
         this.piece = piece;
+    }
+    setId(id: number){
+        this.id = id;
+        return this;
     }
 }
