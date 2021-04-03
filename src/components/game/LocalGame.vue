@@ -19,8 +19,6 @@
   <footer>
     {{chessEngine.message}}
   </footer>
-  <button @click="shuffle()">shuffle</button>
-  <button @click="unShuffle()">unShuffle</button>
 </template>
 
 <script lang="ts">
@@ -36,20 +34,30 @@ export default defineComponent({
       chessEngine: null as unknown as ChessEngine,
     }
   },
-  created() {
+  async created() {
     this.chessEngine = new ChessEngine();
+    this.chessEngine.message = "Setting Up Your Board!";
+    await this.sleep(137);
+    this.chessEngine.shuffle();
+    await this.sleep(4300);
+    this.chessEngine.unShuffle();
+    await this.sleep(3333);
+    this.chessEngine.message = "White's Turn";
   },
   methods: {
-    move(boardSquare: BoardSquare) {
-        let move = this.chessEngine.move(boardSquare);
-    },
-    shuffle(){
-        this.chessEngine.shuffle();    
-    },
-    unShuffle(){
-        this.chessEngine.unShuffle();    
+        move(boardSquare: BoardSquare) {
+            let move = this.chessEngine.move(boardSquare);
+        },
+        shuffle(){
+            this.chessEngine.shuffle();    
+        },
+        unShuffle(){
+            this.chessEngine.unShuffle();    
+        },
+        sleep(ms: number) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
     }
-  }
 })
 </script>
 
@@ -92,7 +100,7 @@ export default defineComponent({
   }
 }
 .cell-move {
-  transition: transform 1.3s;
+  transition: transform 3.7s;
 }
 .chessboard{
     align-content: center; 
