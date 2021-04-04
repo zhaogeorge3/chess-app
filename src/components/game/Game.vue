@@ -78,8 +78,7 @@ export default defineComponent({
       return new Promise(resolve => setTimeout(resolve, ms));
     },
     getShuffle() {
-      console.log(this.chessEngine.message);
-      return this.chessEngine.message == "Setting Up Your Board!"; 
+      return this.message == "Setting Up Your Board!"; 
     },
     getMessage(game: any){
       if(game.turn === 'w'){
@@ -123,19 +122,15 @@ export default defineComponent({
     async loadChessBoard(){
       this.chessEngine = new ChessEngine();
       let playerNum = this.playerNum;
-      if(this.playerNum == 2){
-        this.playerNum = 1;
-      }
-      this.chessEngine.message = "Setting Up Your Board!";
+      this.playerNum = 1;
       this.message = "Setting Up Your Board!";
-      await this.sleep(137);
+      await this.sleep(73);
       this.chessEngine.shuffle();
       await this.sleep(4300);
       this.chessEngine.unShuffle();
       await this.sleep(3333);
       this.playerNum = playerNum;
       this.message = "White's Turn";
-      this.chessEngine.message = "White's Turn";
     },
     updateBoard(id: string, game: any) {
 
@@ -152,7 +147,6 @@ export default defineComponent({
             white: game.p1_token,
             turn: "w"
           };
-          console.log(newGame);
           this.games().set(newGame);
         }  
       }

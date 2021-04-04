@@ -27,23 +27,32 @@ export default defineComponent({
   name: 'NewGame',
   data: function () {
     return {
-      firebaseConfig: {
-        apiKey: "AIzaSyA20nb9TOGBG6oVXIlxQYxXfz1vV-GcWR4",
-        authDomain: "chess-cb086.firebaseapp.com",
-        projectId: "chess-cb086",
-        storageBucket: "chess-cb086.appspot.com",
-        messagingSenderId: "1084426781021",
-        appId: "1:1084426781021:web:44b03423c77b5b9885a8b4",
-        measurementId: "G-M1W5RX8G78"
-      },
-      player1Link: "",
-      player2Link: "",
-      gameMade: false,
+        url: import.meta.env.VUE_APP_URL,
+        firebaseConfig: {
+            apiKey: "AIzaSyA20nb9TOGBG6oVXIlxQYxXfz1vV-GcWR4",
+            authDomain: "chess-cb086.firebaseapp.com",
+            projectId: "chess-cb086",
+            storageBucket: "chess-cb086.appspot.com",
+            messagingSenderId: "1084426781021",
+            appId: "1:1084426781021:web:44b03423c77b5b9885a8b4",
+            measurementId: "G-M1W5RX8G78"
+        },
+        player1Link: "",
+        player2Link: "",
+        gameMade: false,
     }
   },
-  methods: {
+
+  created(){
+    if(!this.url){
+      this.url = "http://localhost:3000/"
+    }
+  },
+
+methods: {
 
     onSucess() {
+      console.log(this.url);
     },
     generateToken(length: number = 7){
       return Math.random().toString(20).substr(2, length);
@@ -60,8 +69,8 @@ export default defineComponent({
         };
         const firebaseGame = firebase.database().ref("games").push();
         firebaseGame.set(newGame).then(() => {
-            this.player1Link = "https://chess-cb086.web.app/game/"+this.player1Link;
-            this.player2Link = "https://chess-cb086.web.app/game/"+this.player2Link;
+            this.player1Link = this.url + "game/" + this.player1Link;
+            this.player2Link = this.url + "game/" + this.player2Link;
             this.gameMade = true;
         
         }, (err) => { 
