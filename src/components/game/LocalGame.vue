@@ -1,9 +1,9 @@
 <template id='game'>
     <div class="chessboard" >
         <div v-bind:class="!chessEngine.isWhitesTurn ? 'rotated' : 'not-rotated'">
-            <transition-group v-bind:name="getGroup()" tag="div" class="container">
+            <transition-group v-if="getShuffle()" name="cell" tag="div" class="container">
                 <div class="row" v-bind:class="!chessEngine.isWhitesTurn ? 'piece-rotated' : 'piece-not-rotated'" v-for="(boardSquare) in chessEngine.getBoardList()" v-bind:key="boardSquare.id">
-                    <div v-bind:class="cell" v-bind:key="boardSquare.id">
+                    <div class="cell" v-bind:key="boardSquare.id">
                         <button class="square" v-bind:style="{ backgroundColor: boardSquare.background}"
                         @click="move(boardSquare)"
                         >
@@ -12,7 +12,17 @@
                     </div>
                 </div>
             </transition-group>
-
+            <div v-if="!getShuffle()" class="container">
+                <div class="row" v-bind:class="!chessEngine.isWhitesTurn ? 'piece-rotated' : 'piece-not-rotated'" v-for="(boardSquare) in chessEngine.getBoardList()" v-bind:key="boardSquare.id">
+                    <div class="cell" v-bind:key="boardSquare.id">
+                        <button class="square" v-bind:style="{ backgroundColor: boardSquare.background}"
+                        @click="move(boardSquare)"
+                        >
+                            <img v-if="boardSquare.piece != null" v-bind:src="boardSquare.piece.image">
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
   <br>
@@ -45,20 +55,14 @@ export default defineComponent({
     this.chessEngine.message = "White's Turn";
   },
   methods: {
-        getGroup(){
-            return this.chessEngine.message == "Setting Up Your Board!" ? "cell" : "none";
-        },
         move(boardSquare: BoardSquare) {
             let move = this.chessEngine.move(boardSquare);
         },
-        shuffle(){
-            this.chessEngine.shuffle();    
-        },
-        unShuffle(){
-            this.chessEngine.unShuffle();    
-        },
         sleep(ms: number) {
             return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        getShuffle() {
+            return this.chessEngine.message == "Setting Up Your Board!"; 
         }
     }
 })

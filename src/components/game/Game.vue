@@ -1,13 +1,32 @@
 <template id='game'>
-  <div class="chessboard" v-if="chessEngine" v-bind:class="playerNum == 2 ? 'rotated' : 'not-rotated'">
-    <div class="row" v-bind:class="playerNum == 2 ? 'rotated' : 'not-rotated'" v-for="(row, index) in chessEngine.board" v-bind:key="index">
-        <button class="square" v-for="(col, index) in row" v-bind:key="index" v-bind:style="{ backgroundColor: col.background}"
-          @click="move(col)"
-        >
-          <img v-if="col.piece != null" v-bind:src="col.piece.image">
-        </button>
+<div v-if="chessEngine">
+  <div v-if="getShuffle()" class="chessboard">
+    <transition-group name="cell" tag="div" class="container">
+      <div class="row" v-for="(boardSquare) in chessEngine.getBoardList()" v-bind:key="boardSquare.id">
+        <div class="cell" v-bind:key="boardSquare.id">
+          <button class="square" v-bind:style="{ backgroundColor: boardSquare.background}"
+          @click="move(boardSquare)"
+          >
+            <img v-if="boardSquare.piece != null" v-bind:src="boardSquare.piece.image">
+          </button>
+        </div>
+      </div>
+    </transition-group>
+  </div>
+  <div v-if="!getShuffle()" class="chessboard" v-bind:class="playerNum == 2 ? 'rotated' : 'not-rotated'">
+    <div class="container">
+      <div class="row" v-bind:class="playerNum == 2 ? 'piece-rotated' : 'piece-not-rotated'" v-for="(boardSquare) in chessEngine.getBoardList()" v-bind:key="boardSquare.id">
+        <div class="cell" v-bind:key="boardSquare.id">
+          <button class="square" v-bind:style="{ backgroundColor: boardSquare.background}"
+          @click="move(boardSquare)"
+          >
+            <img v-if="boardSquare.piece != null" v-bind:src="boardSquare.piece.image">
+          </button>
+        </div>
+      </div>
     </div>
   </div>
+</div>
   <br>
   <footer>
     {{message}}
@@ -55,6 +74,13 @@ export default defineComponent({
     });
   },
   methods: {
+    sleep(ms: number) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    getShuffle() {
+      console.log(this.chessEngine.message);
+      return this.chessEngine.message == "Setting Up Your Board!"; 
+    },
     getMessage(game: any){
       if(game.turn === 'w'){
         return "White's Turn";
@@ -94,12 +120,29 @@ export default defineComponent({
     isMyTurn(playerNum: number, turn: string) {
       return (playerNum === 1 && turn === 'w') || (playerNum === 2 && turn === 'b');
     },
+    async loadChessBoard(){
+      this.chessEngine = new ChessEngine();
+      let playerNum = this.playerNum;
+      if(this.playerNum == 2){
+        this.playerNum = 1;
+      }
+      this.chessEngine.message = "Setting Up Your Board!";
+      this.message = "Setting Up Your Board!";
+      await this.sleep(137);
+      this.chessEngine.shuffle();
+      await this.sleep(4300);
+      this.chessEngine.unShuffle();
+      await this.sleep(3333);
+      this.playerNum = playerNum;
+      this.message = "White's Turn";
+      this.chessEngine.message = "White's Turn";
+    },
     updateBoard(id: string, game: any) {
 
       this.playerNum = this.figurePlayer(this.token, game);
       if(game.turn != "not started"){
         if (!this.chessEngine) {
-          this.chessEngine = new ChessEngine();
+          this.loadChessBoard();
         }
       } else {
         if(this.playerNum ==  2){
@@ -153,29 +196,72 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.square {
-  height: 90px;
-  width: 90px;
-  background-repeat: no-repeat;
-  background-position: center;
-  vertical-align: top;
-}
-.row{
-  margin: 0;
-  height: 90px;
-  line-height: 0;
-  font-size: 0;
-  vertical-align:bottom;
-}
+.square{
+    height: 100%;
+    width: 100%;
+    }
 
 .footer {
   height: 50px;
   margin-top: -50px;
 }
 
-.rotated {
-  transform: rotate(180deg);
+.piece-rotated{
+    transform: rotate(180deg);    
+}
 
+.piece-not-rotated{
+    transform: rotate(0deg);    
+}
+
+.rotated {
+    width: 100%;
+    animation: animationFrames 1s ease 0s 1 normal forwards running;
+}
+@keyframes animationFrames {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(180deg);
+  }
+}
+
+.cell-move {
+  transition: transform 3.7s;
+}
+.chessboard{
+    align-content: center; 
+    display: flex;
+    justify-content: center;   
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+  max-width: 852px;
+  margin: auto;
+}
+
+.row {
+  display: flex;
+  flex-basis: 12.5%;
+  margin: 0;
+  height: calc((100vw) / 10.159);
+  max-height: 107px;
+  justify-content: stretch;
+  border: 0px solid black;
+}
+
+img {
+    height: 77%;
+    width: 77%;    
+}
+
+.row > div{
+    width: 100%;
+    align-self: stretch;
 }
 </style>
 
