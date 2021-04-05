@@ -117,7 +117,7 @@ export default defineComponent({
           this.message = "Game Over " + (this.playerNum == 1 ? "Black" : "White") + " Won!";
         }
       } else {
-        if(this.chessEngine.gameOver){
+        if(this.chessEngine?.gameOver){
           this.message = "You Won!";
         }
       }
