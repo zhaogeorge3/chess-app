@@ -8,6 +8,7 @@ import { Bishop } from '../pieces/Bishop'
 import { Knight } from '../pieces/Knight'
 import _ from "lodash";
 import * as ChessJS from "chess.js"
+import PieceFactory from "./PieceFactory"
 
 
 export class ChessEngine{ 
@@ -124,29 +125,28 @@ export class ChessEngine{
     }
 
     initializePieces(board: BoardSquare[][]){
-        this.initializePawns(board);
-        this.board[0][0].setPiece(new Rook(false, 0, 0));
-        this.board[0][7].setPiece(new Rook(false, 0, 7));
-        this.board[7][0].setPiece(new Rook(true, 7, 0));
-        this.board[7][7].setPiece(new Rook(true, 7, 7));
+        this.loadWithFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+    }
 
-        this.board[0][2].setPiece(new Bishop(false, 0, 2));
-        this.board[0][5].setPiece(new Bishop(false, 0, 5));
-        this.board[7][2].setPiece(new Bishop(true, 7, 2));
-        this.board[7][5].setPiece(new Bishop(true, 7, 5));
-
-        this.board[0][1].setPiece(new Knight(false, 0, 1));
-        this.board[0][6].setPiece(new Knight(false, 0, 6));
-        this.board[7][1].setPiece(new Knight(true, 7, 1));
-        this.board[7][6].setPiece(new Knight(true, 7, 6));
-
-        this.board[0][3].setPiece(new Queen(false, 0, 3));
-        this.board[7][3].setPiece(new Queen(true, 7, 3));
-
-        this.board[0][4].setPiece(new King(false, 0, 4));
-        this.board[7][4].setPiece(new King(true, 7, 4));
-
-
+    loadWithFen(fen: string){
+        let rows = fen.split("/");
+        let rowIndex = 0;
+        rows.forEach(row => {
+            let colIndex = 0;
+            for (let i = 0; i < row.length; i++) {
+                let letterPiece = row[i];
+                if(Number.isInteger(parseInt(letterPiece, 10))){
+                    for(let j = colIndex; j < colIndex + parseInt(letterPiece, 10); j++){
+                        this.board[rowIndex][j].piece = null;
+                    }
+                    colIndex += parseInt(letterPiece, 10);
+                } else {
+                    this.board[rowIndex][colIndex].piece = PieceFactory.getPieceFromFenCode(letterPiece, rowIndex, colIndex);
+                    colIndex++;
+                }
+              }
+            rowIndex++;
+        });
     }
 
     initializePawns(board: BoardSquare[][]){
@@ -195,6 +195,7 @@ export class ChessEngine{
         });
         this.resetBackGroundColor();
         if(valid){
+
             this.engine.move({
                 from: this.board[this.pieceSelected.currentX][this.pieceSelected.currentY].boardIndex,
                 to: boardSquare.boardIndex,
@@ -202,13 +203,11 @@ export class ChessEngine{
               });
             ps = _.cloneDeep(this.pieceSelected);
             bs = _.cloneDeep(boardSquare);
+            this.loadWithFen(this.engine.fen().split(" ")[0]);
             if(!fake){
                 this.isWhitesTurn = !this.isWhitesTurn;
             }
             this.message = this.getMessage();
-            this.board[boardSquare.x][boardSquare.y].setPiece(this.pieceSelected);
-            this.board[this.pieceSelected.currentX][this.pieceSelected.currentY].setPiece(null);
-            this.pieceSelected.setXY(boardSquare.x, boardSquare.y);
             this.validMoves = [];
             this.pieceSelected = null;
             if(this.engine.game_over()){
@@ -223,10 +222,6 @@ export class ChessEngine{
             this.selectPiece(boardSquare, fake);
         }
         return null;
-    }
-
-    isInCheckMate(){
-        let validKingMoves
     }
 
 }

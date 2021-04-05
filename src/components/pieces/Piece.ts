@@ -21,5 +21,21 @@ export abstract class Piece {
         this.currentX = x;
         this.currentY = y;
     }
-    abstract getValidMovesFromEngine(engine: any, board: BoardSquare[][]): number[][];
+    getValidMovesFromEngine(engine: any, board: BoardSquare[][]): number[][] {
+        let validMoves = [] as number[][];
+        board.forEach(boardRow => {
+            boardRow.forEach(boardSquare => {
+                const m = engine.move({
+                    from: board[this.currentX][this.currentY].boardIndex,
+                    to: boardSquare.boardIndex,
+                    promotion: 'q'
+                  });
+                  if(m){
+                    validMoves.push([boardSquare.x, boardSquare.y]);
+                    engine.undo();
+                }
+            });
+        })
+        return validMoves;
+    }
 }
