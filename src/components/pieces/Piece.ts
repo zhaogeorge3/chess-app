@@ -21,5 +21,5 @@ export abstract class Piece {
         this.currentX = x;
         this.currentY = y;
     }
-    abstract getValidMoves(board: BoardSquare[][]): number[][];
+    abstract getValidMovesFromEngine(engine: any, board: BoardSquare[][]): number[][];
 }

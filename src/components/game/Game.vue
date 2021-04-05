@@ -113,6 +113,13 @@ export default defineComponent({
       if(this.isMyTurn(this.playerNum, game.turn) && game.ps != null){
         this.fakeMove(this.chessEngine.board[game.ps.currentX][game.ps.currentY]);
         this.fakeMove(this.chessEngine.board[game.bs.x][game.bs.y]);
+        if(this.chessEngine.gameOver){
+          this.message = "Game Over " + (this.playerNum == 1 ? "Black" : "White") + " Won!";
+        }
+      } else {
+        if(this.chessEngine.gameOver){
+          this.message = "You Won!";
+        }
       }
 
     },

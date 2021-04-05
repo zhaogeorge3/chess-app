@@ -10,212 +10,23 @@ export class Queen extends Piece {
         super(Piece.getWhiteElseBlackImage(Queen.IMAGE, iswhite), iswhite, currentX, currentY);
     }
 
-    private isWithinBoard(move: number[]) {
-        return move[0] >= 0 && move[0] < 8 && move[1] >= 0 && move[1] < 8;
-    }
 
-    getUpMoves(board: BoardSquare[][]){
+    getValidMovesFromEngine(engine: any, board: BoardSquare[][]): number[][] {
         let validMoves = [] as number[][];
-        for(let i = 1; i < 8; i++){
-            let x = this.currentX + i;
-            let y = this.currentY;
-            let move = [x, y];
-            if(this.isWithinBoard(move)){
-                if(board[x][y].piece != null){
-                    if(board[x][y].piece?.isWhite == this.isWhite){
-                        break;
-                    } else{
-                        validMoves.push(move);
-                        break;
-                    }
-                } else{
-                    validMoves.push(move);
+        board.forEach(boardRow => {
+            boardRow.forEach(boardSquare => {
+                const m = engine.move({
+                    from: board[this.currentX][this.currentY].boardIndex,
+                    to: boardSquare.boardIndex,
+                    promotion: 'q'
+                  });
+                  if(m){
+                    validMoves.push([boardSquare.x, boardSquare.y]);
+                    engine.undo();
                 }
-            } else{
-                break;
-            }
-        }
-        return validMoves;
-    }
-
-    getDownMoves(board: BoardSquare[][]){
-        let validMoves = [] as number[][];
-        for(let i = 1; i < 8; i++){
-            let x = this.currentX - i;
-            let y = this.currentY;
-            let move = [x, y];
-            if(this.isWithinBoard(move)){
-                if(board[x][y].piece != null){
-                    if(board[x][y].piece?.isWhite == this.isWhite){
-                        break;
-                    } else{
-                        validMoves.push(move);
-                        break;
-                    }
-                } else{
-                    validMoves.push(move);
-                }
-            } else{
-                break;
-            }
-        }
-        return validMoves;
-    }
-
-    getRightMoves(board: BoardSquare[][]){
-        let validMoves = [] as number[][];
-        for(let i = 1; i < 8; i++){
-            let x = this.currentX;
-            let y = this.currentY + i;
-            let move = [x, y];
-            if(this.isWithinBoard(move)){
-                if(board[x][y].piece != null){
-                    if(board[x][y].piece?.isWhite == this.isWhite){
-                        break;
-                    } else{
-                        validMoves.push(move);
-                        break;
-                    }
-                } else{
-                    validMoves.push(move);
-                }
-            } else{
-                break;
-            }
-        }
-        return validMoves;
-    }
-
-    getLeftMoves(board: BoardSquare[][]){
-        let validMoves = [] as number[][];
-        for(let i = 1; i < 8; i++){
-            let x = this.currentX;
-            let y = this.currentY - i;
-            let move = [x, y];
-            if(this.isWithinBoard(move)){
-                if(board[x][y].piece != null){
-                    if(board[x][y].piece?.isWhite == this.isWhite){
-                        break;
-                    } else{
-                        validMoves.push(move);
-                        break;
-                    }
-                } else{
-                    validMoves.push(move);
-                }
-            } else{
-                break;
-            }
-        }
-        return validMoves;
-    }
-
-    getUpRightMoves(board: BoardSquare[][]){
-        let validMoves = [] as number[][];
-        for(let i = 1; i < 8; i++){
-            let x = this.currentX + i;
-            let y = this.currentY + i;
-            let move = [x, y];
-            if(this.isWithinBoard(move)){
-                if(board[x][y].piece != null){
-                    if(board[x][y].piece?.isWhite == this.isWhite){
-                        break;
-                    } else{
-                        validMoves.push(move);
-                        break;
-                    }
-                } else{
-                    validMoves.push(move);
-                }
-            } else{
-                break;
-            }
-        }
-        return validMoves;
-    }
-
-    getUpLeftMoves(board: BoardSquare[][]){
-        let validMoves = [] as number[][];
-        for(let i = 1; i < 8; i++){
-            let x = this.currentX + i;
-            let y = this.currentY - i;
-            let move = [x, y];
-            if(this.isWithinBoard(move)){
-                if(board[x][y].piece != null){
-                    if(board[x][y].piece?.isWhite == this.isWhite){
-                        break;
-                    } else{
-                        validMoves.push(move);
-                        break;
-                    }
-                } else{
-                    validMoves.push(move);
-                }
-            } else{
-                break;
-            }
-        }
-        return validMoves;
-    }
-
-    getDownRightMoves(board: BoardSquare[][]){
-        let validMoves = [] as number[][];
-        for(let i = 1; i < 8; i++){
-            let x = this.currentX - i;
-            let y = this.currentY + i;
-            let move = [x, y];
-            if(this.isWithinBoard(move)){
-                if(board[x][y].piece != null){
-                    if(board[x][y].piece?.isWhite == this.isWhite){
-                        break;
-                    } else{
-                        validMoves.push(move);
-                        break;
-                    }
-                } else{
-                    validMoves.push(move);
-                }
-            } else{
-                break;
-            }
-        }
-        return validMoves;
-    }
-
-    getDownLeftMoves(board: BoardSquare[][]){
-        let validMoves = [] as number[][];
-        for(let i = 1; i < 8; i++){
-            let x = this.currentX - i;
-            let y = this.currentY - i;
-            let move = [x, y];
-            if(this.isWithinBoard(move)){
-                if(board[x][y].piece != null){
-                    if(board[x][y].piece?.isWhite == this.isWhite){
-                        break;
-                    } else{
-                        validMoves.push(move);
-                        break;
-                    }
-                } else{
-                    validMoves.push(move);
-                }
-            } else{
-                break;
-            }
-        }
-        return validMoves;
-    }
-
-    getValidMoves(board: BoardSquare[][]): number[][] {
-        let validMoves = [] as number[][];
-        validMoves.push(...this.getUpLeftMoves(board));
-        validMoves.push(...this.getUpRightMoves(board));
-        validMoves.push(...this.getDownLeftMoves(board));
-        validMoves.push(...this.getDownRightMoves(board));
-        validMoves.push(...this.getLeftMoves(board));
-        validMoves.push(...this.getRightMoves(board));
-        validMoves.push(...this.getUpMoves(board));
-        validMoves.push(...this.getDownMoves(board));
+            });
+        })
+        console.log(validMoves);
         return validMoves;
     }
 

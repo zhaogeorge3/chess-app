@@ -2,6 +2,7 @@ import { Piece } from "../pieces/Piece"
 
 export default class BoardSquare {
     id?: number;
+    boardIndex?: string;
     piece?: Piece | null;
     background: string;
     x: number;
@@ -20,6 +21,10 @@ export default class BoardSquare {
     }
     setId(id: number){
         this.id = id;
+        return this;
+    }
+    setBoardIndex(boardIndex: string){
+        this.boardIndex = boardIndex;
         return this;
     }
 }
