@@ -1,14 +1,9 @@
 import { Piece } from "../pieces/Piece"
 import BoardSquare from '../board/BoardSquare'
-import { Pawn } from '../pieces/Pawn'
-import { Rook } from '../pieces/Rook'
-import { Queen } from '../pieces/Queen'
-import { King } from '../pieces/King'
-import { Bishop } from '../pieces/Bishop'
-import { Knight } from '../pieces/Knight'
 import _ from "lodash";
 import * as ChessJS from "chess.js"
 import PieceFactory from "./PieceFactory"
+import Coordinates from "./Coordinates";
 
 
 export class ChessEngine{ 
@@ -18,15 +13,17 @@ export class ChessEngine{
     message: string;
     isWhitesTurn: boolean;
     pieceSelected?: Piece | null;
-    validMoves: number[][] | null | undefined;
+    validMoves: Coordinates[] | null | undefined;
     letterGrid: Map<number, string> = new Map().set(0, 'a').set(1, 'b').set(2, 'c').set(3, 'd').set(4, 'e').set(5, 'f').set(6, 'g').set(7, 'h');
     numberGrid: Map<number, string> = new Map().set(0, '8').set(1, '7').set(2, '6').set(3, '5').set(4, '4').set(5, '3').set(6, '2').set(7, '1');
     engine: any;
     
+    private readonly initialFenCode = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+
     constructor() { 
-        this.board = this.initializeBoard();
         const Chess = typeof ChessJS === "function" ? ChessJS : ChessJS.Chess;
         this.engine = new Chess();
+        this.board = this.initializeBoard();
         this.isWhitesTurn = true;
         this.message = this.getMessage();
         this.validMoves = [];
@@ -35,7 +32,6 @@ export class ChessEngine{
     shuffle(){
         let shuffledBoardList = _.shuffle(this.getBoardList());
         let board = [] as any;
-        let count = 0 as number;
         for(let i = 0; i < 8; i++){
             let row = [] as any
             for(let j = 0; j < 8; j++){
@@ -109,8 +105,8 @@ export class ChessEngine{
     setBackgroudColor(){
         this.board.forEach(row => {
             row.forEach(col => {
-                this.validMoves?.forEach(move => {
-                if(move[0] == col.x && move[1] == col.y){
+                this.validMoves?.forEach(coordinate => {
+                if(coordinate.x == col.x && coordinate.y == col.y){
                     col.background = '#3E880C';
                 }
                 });
@@ -119,16 +115,17 @@ export class ChessEngine{
     }
 
     resetBackGroundColor(){
-        this.validMoves?.forEach(move => {
-            this.board[move[0]][move[1]].background = this.board[move[0]][move[1]].originalBackground;
+        this.validMoves?.forEach(coordinate => {
+            this.board[coordinate.x][coordinate.y].resetBackGroundColor();
         })  
     }
 
     initializePieces(board: BoardSquare[][]){
-        this.loadWithFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+        this.loadWithFen();
     }
 
-    loadWithFen(fen: string){
+    loadWithFen(){
+        let fen = this.engine.fen().split(" ")[0] as string;
         let rows = fen.split("/");
         let rowIndex = 0;
         rows.forEach(row => {
@@ -147,15 +144,6 @@ export class ChessEngine{
               }
             rowIndex++;
         });
-    }
-
-    initializePawns(board: BoardSquare[][]){
-        for(let i = 0; i < 8; i++){
-        board[1][i].setPiece(new Pawn(false, 1, i));
-        }
-        for(let i = 0; i < 8; i++){
-        board[6][i].setPiece(new Pawn(true, 6, i));
-        }
     }
 
     getMessage(){
@@ -188,14 +176,13 @@ export class ChessEngine{
         let bs = null as any;
         if(this.pieceSelected != null){
             let valid = false;
-            this.validMoves?.forEach(move => {
-                if(move[0] == boardSquare.x && move[1] == boardSquare.y){
+            this.validMoves?.forEach(coordinate => {
+                if(coordinate.x == boardSquare.x && coordinate.y == boardSquare.y){
                     valid = true;
                 }
         });
         this.resetBackGroundColor();
         if(valid){
-
             this.engine.move({
                 from: this.board[this.pieceSelected.currentX][this.pieceSelected.currentY].boardIndex,
                 to: boardSquare.boardIndex,
@@ -203,7 +190,7 @@ export class ChessEngine{
               });
             ps = _.cloneDeep(this.pieceSelected);
             bs = _.cloneDeep(boardSquare);
-            this.loadWithFen(this.engine.fen().split(" ")[0]);
+            this.loadWithFen();
             if(!fake){
                 this.isWhitesTurn = !this.isWhitesTurn;
             }

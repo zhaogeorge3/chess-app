@@ -27,4 +27,8 @@ export default class BoardSquare {
         this.boardIndex = boardIndex;
         return this;
     }
+
+    resetBackGroundColor(){
+        this.background = this.originalBackground;
+    }
 }

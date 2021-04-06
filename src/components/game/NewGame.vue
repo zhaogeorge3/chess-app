@@ -44,7 +44,6 @@ export default defineComponent({
   },
 
   created(){
-    console.log(import.meta.env);
     if(import.meta.env.MODE == "production"){
       this.url = "https://chess-cb086.web.app/"
     } else {

@@ -1,4 +1,5 @@
 import BoardSquare from "../board/BoardSquare";
+import Coordinates from "../board/Coordinates";
 
 export abstract class Piece {
     image: string;
@@ -21,8 +22,8 @@ export abstract class Piece {
         this.currentX = x;
         this.currentY = y;
     }
-    getValidMovesFromEngine(engine: any, board: BoardSquare[][]): number[][] {
-        let validMoves = [] as number[][];
+    getValidMovesFromEngine(engine: any, board: BoardSquare[][]): Coordinates[] {
+        let validMoves = [] as Coordinates[];
         board.forEach(boardRow => {
             boardRow.forEach(boardSquare => {
                 const m = engine.move({
@@ -31,7 +32,7 @@ export abstract class Piece {
                     promotion: 'q'
                   });
                   if(m){
-                    validMoves.push([boardSquare.x, boardSquare.y]);
+                    validMoves.push(new Coordinates(boardSquare.x, boardSquare.y));
                     engine.undo();
                 }
             });
