@@ -5,4 +5,5 @@ import { VueClipboard } from '@soerenmartius/vue3-clipboard'
 import Toaster from "@meforma/vue-toaster";
 
 
-createApp(App).use(router).use(VueClipboard).use(Toaster).mount('#app')
+let app = createApp(App);
+app.use(Toaster).provide('toast', app.config.globalProperties.$toast).use(router).use(VueClipboard).mount('#app');

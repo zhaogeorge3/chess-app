@@ -36,7 +36,7 @@ import { defineComponent } from 'vue'
 import { ChessEngine } from '../board/ChessEngine'
 import BoardSquare from '../board/BoardSquare'
 import _ from "lodash";
-import useToast from "../../useToast";
+import { inject } from 'vue'
 
 export default defineComponent({
   name: 'LocalGame',
@@ -47,11 +47,10 @@ export default defineComponent({
     }
   },
   async created() {
-    const {trigger} = useToast();
-    this.toastTrigger = trigger; 
+    this.toastTrigger = inject('toast') as any;
     this.chessEngine = new ChessEngine();
     this.chessEngine.message = "Setting Up Your Board!";
-    this.toastTrigger('Setting Up Your Board!', "info", {position: "top-right", duration: 7000}); 
+    this.toastTrigger.info('Setting Up Your Board!', {position: "top-right", duration: 7000}); 
     await this.sleep(137);
     this.chessEngine.shuffle();
     await this.sleep(4300);
@@ -64,9 +63,9 @@ export default defineComponent({
             let move = this.chessEngine.move(boardSquare);
             if(move != null){
               if(this.chessEngine.engine.in_checkmate()){
-                this.toastTrigger('CheckMate!', "show", {position: "top-right", duration: 1373});   
+                this.toastTrigger.show('CheckMate!', {position: "top-right", duration: 1373});   
               } else if(this.chessEngine.engine.in_check()){
-                this.toastTrigger('Check!', "warning", {position: "top-right", duration: 1373}); 
+                this.toastTrigger.warning('Check!', {position: "top-right", duration: 1373}); 
               }
             }
         },
