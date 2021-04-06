@@ -51,7 +51,7 @@ export default defineComponent({
     this.chessEngine.shuffle();
     await this.sleep(4300);
     this.chessEngine.unShuffle();
-    await this.sleep(3333);
+    await this.sleep(3737);
     this.chessEngine.message = "White's Turn";
   },
   methods: {

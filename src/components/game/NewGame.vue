@@ -19,12 +19,13 @@ import { defineComponent } from 'vue';
 import firebase from "firebase/app";
 import 'firebase/auth';
 import 'firebase/database';
-
+import useToast from "../../useToast";
 
 export default defineComponent({
 
 
   name: 'NewGame',
+
   data: function () {
     return {
         url: import.meta.env.VUE_APP_URL,
@@ -40,10 +41,14 @@ export default defineComponent({
         player1Link: "",
         player2Link: "",
         gameMade: false,
+        toastTrigger: null as any
     }
   },
 
   created(){
+    const {trigger} = useToast();
+    this.toastTrigger = trigger; 
+
     if(import.meta.env.MODE == "production"){
       this.url = "https://chess-cb086.web.app/"
     } else {
@@ -54,7 +59,7 @@ export default defineComponent({
 methods: {
 
     onSucess() {
-      console.log(this.url);
+      this.toastTrigger('Successfully Copied To Clipboard!', "success", {position: "top-right", duration: 737});  
     },
     generateToken(length: number = 7){
       return Math.random().toString(20).substr(2, length);
