@@ -50,7 +50,7 @@ export default defineComponent({
     this.toastTrigger = inject('toast') as any;
     this.chessEngine = new ChessEngine();
     this.chessEngine.message = "Setting Up Your Board!";
-    this.toastTrigger.info('Setting Up Your Board!', {position: "top-right", duration: 7000}); 
+    this.toastTrigger.info('Setting Up Your Board!', {position: "top-right", duration: 6373}); 
     await this.sleep(137);
     this.chessEngine.shuffle();
     await this.sleep(4300);
@@ -63,9 +63,9 @@ export default defineComponent({
             let move = this.chessEngine.move(boardSquare);
             if(move != null){
               if(this.chessEngine.engine.in_checkmate()){
-                this.toastTrigger.show('CheckMate!', {position: "top-right", duration: 1373});   
+                this.toastTrigger.show('CheckMate!', {position: "top-right", duration: 3773});   
               } else if(this.chessEngine.engine.in_check()){
-                this.toastTrigger.warning('Check!', {position: "top-right", duration: 1373}); 
+                this.toastTrigger.warning('Check!', {position: "top-right", duration: 3773}); 
               }
             }
         },

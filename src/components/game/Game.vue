@@ -120,7 +120,7 @@ export default defineComponent({
           this.message = "Game Over " + (this.playerNum == 1 ? "Black" : "White") + " Won!";
           this.toastTrigger.error(this.message, {position: "top-right", duration: 3773});  
         } else if(this.chessEngine.engine.in_check()){
-          this.toastTrigger.error("Check!", {position: "top-right", duration: 1773});
+          this.toastTrigger.error("Check!", {position: "top-right", duration: 3773});
         }
       } else {
         if(this.chessEngine?.gameOver){
@@ -137,7 +137,7 @@ export default defineComponent({
       this.chessEngine = new ChessEngine();
       let playerNum = this.playerNum;
       this.playerNum = 1;
-      this.toastTrigger.info('Setting Up Your Board!', {position: "top-right", duration: 7000}); 
+      this.toastTrigger.info('Setting Up Your Board!', {position: "top-right", duration: 6337}); 
       this.message = "Setting Up Your Board!";
       await this.sleep(73);
       this.chessEngine.shuffle();
