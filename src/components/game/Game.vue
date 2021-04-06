@@ -40,6 +40,7 @@ import BoardSquare from '../board/BoardSquare'
 import firebase from "firebase/app";
 import 'firebase/auth'
 import 'firebase/database'
+import useToast from "../../useToast";
 
 export default defineComponent({
   name: 'Game',
@@ -51,6 +52,7 @@ export default defineComponent({
       id: null as unknown as string,
       playerNum: null as unknown as number,
       game: null as unknown as any,
+      toastTrigger: null as any,
       firebaseConfig: {
         apiKey: "AIzaSyA20nb9TOGBG6oVXIlxQYxXfz1vV-GcWR4",
         authDomain: "chess-cb086.firebaseapp.com",
@@ -63,6 +65,9 @@ export default defineComponent({
     }
   },
   created() {
+
+    const {trigger} = useToast();
+    this.toastTrigger = trigger; 
     this.token = this.$router.currentRoute.value.params.token.toString();
 
     firebase.initializeApp(this.firebaseConfig);
@@ -115,10 +120,14 @@ export default defineComponent({
         this.fakeMove(this.chessEngine.board[game.bs.x][game.bs.y]);
         if(this.chessEngine.gameOver){
           this.message = "Game Over " + (this.playerNum == 1 ? "Black" : "White") + " Won!";
+          this.toastTrigger(this.message, "error", {position: "top-right", duration: 1373});  
+        } else if(this.chessEngine.engine.in_check()){
+          this.toastTrigger("Check!", "error", {position: "top-right", duration: 1373});
         }
       } else {
         if(this.chessEngine?.gameOver){
           this.message = "You Won!";
+          this.toastTrigger(this.message, "success", {position: "top-right", duration: 1373}); 
         }
       }
 
@@ -130,6 +139,7 @@ export default defineComponent({
       this.chessEngine = new ChessEngine();
       let playerNum = this.playerNum;
       this.playerNum = 1;
+      this.toastTrigger('Setting Up Your Board!', "info", {position: "top-right", duration: 7000}); 
       this.message = "Setting Up Your Board!";
       await this.sleep(73);
       this.chessEngine.shuffle();
