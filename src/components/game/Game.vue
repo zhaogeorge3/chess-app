@@ -118,14 +118,14 @@ export default defineComponent({
         this.fakeMove(this.chessEngine.board[game.bs.x][game.bs.y]);
         if(this.chessEngine.gameOver){
           this.message = "Game Over " + (this.playerNum == 1 ? "Black" : "White") + " Won!";
-          this.toastTrigger.error(this.message, {position: "top-right", duration: 1373});  
+          this.toastTrigger.error(this.message, {position: "top-right", duration: 3773});  
         } else if(this.chessEngine.engine.in_check()){
-          this.toastTrigger.error("Check!", {position: "top-right", duration: 1373});
+          this.toastTrigger.error("Check!", {position: "top-right", duration: 1773});
         }
       } else {
         if(this.chessEngine?.gameOver){
           this.message = "You Won!";
-          this.toastTrigger.success(this.message, {position: "top-right", duration: 1373}); 
+          this.toastTrigger.success(this.message, {position: "top-right", duration: 3773}); 
         }
       }
 
