@@ -1,6 +1,8 @@
 <template>
-    <button v-if="!gameMade" @click="newGame()">new 2 player game</button>
-    <button v-if="!gameMade"><router-link :to="{ name: 'LocalGame' }">Local Game</router-link></button>
+  <div v-if="!gameMade">
+    <button class="bouncy buttonGame" @click="newGame()">Online 2 Player Game</button>
+    <button class="bouncy buttonGame" style="animation-delay:0.07s"><router-link :to="{ name: 'LocalGame' }">Local Game</router-link></button>
+  </div>
     <div v-if="gameMade">
         <button><a :href="player1Link">click here to play</a></button>
         <br>
@@ -88,5 +90,71 @@ methods: {
 </script>
 
 <style scoped>
+
+.bouncy{
+  animation:bouncy 3s infinite linear;
+  position:relative;
+}
+@keyframes bouncy {
+  0%{top:0em}
+  40%{top:0em}
+  43%{top:-0.9em}
+  46%{top:0em}
+  48%{top:-0.4em}
+  50%{top:0em}
+  100%{top:0em;}
+}
+
+a:link {
+  color: #09d635;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #09d635;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #000000;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:active {
+  color: #09d635;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.buttonGame{
+  display:inline-block;
+  word-wrap: break-word;
+  width: 15%;
+  padding:0.35em 1.2em;
+  border:0.1em solid rgba(122, 118, 118, 0.884);
+  margin:0 0.3em 0.3em 0;
+  border-radius:0.12em;
+  box-sizing: border-box;
+  text-decoration:none;
+  font-family:'Roboto',sans-serif;
+  font-weight:300;
+  color:#09d635;
+  text-align:center;
+  transition: all 0.2s;
+  background-color: rgba(122, 118, 118, 0.884);
+}
+.buttonGame:hover{
+  color:#000000;
+  background-color:#09d635;
+}
+@media all and (max-width:30em){
+ .buttonGame{
+  display:block;
+  margin:0.4em auto;
+}
+}
 
 </style>

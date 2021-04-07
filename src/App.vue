@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1>Welcome To Chess</h1>
+    <h1>Chess</h1>
   </header>
   <div>
     <router-view />
